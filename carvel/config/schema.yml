@@ -1,0 +1,22 @@
+#@data/values-schema
+---
+#@schema/nullable
+avi_user: ""
+#@schema/nullable
+tp_host: ""
+#@schema/nullable
+tmc_host: ""
+#@schema/nullable
+avi_password: ""
+#@schema/nullable
+spaces: ""
+#@schema/nullable
+managed_domains: ""
+#@schema/nullable
+avi_controller: ""
+#@schema/nullable
+project: ""
+#@schema/nullable
+project_id: ""
+#@schema/nullable
+csp_token: ""

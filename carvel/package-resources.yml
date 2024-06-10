@@ -1,0 +1,109 @@
+apiVersion: data.packaging.carvel.dev/v1alpha1
+kind: Package
+metadata:
+  creationTimestamp: null
+  name: avi-gslb.field.tanzu.com.0.0.0
+  labels:
+    package.spaces.tanzu.vmware.com/package-ref: avi-gslb.field.tanzu.com
+    spaces.tanzu.vmware.com/trait-package: true
+spec:
+  refName: avi-gslb.field.tanzu.com
+  releasedAt: null
+  template:
+    spec:
+      deploy:
+      - kapp: {}
+      fetch:
+      - git: {}
+      template:
+      - ytt:
+          paths:
+          - config
+      - kbld: {}
+  valuesSchema:
+    openAPIv3:
+      additionalProperties: false
+      properties:
+        csp_token:
+          default: null
+          nullable: true
+          type: string
+        avi_user:
+          default: null
+          nullable: true
+          type: string
+        project:
+          default: null
+          nullable: true
+          type: string
+        project_id:
+          default: null
+          nullable: true
+          type: string
+        avi_password:
+          default: null
+          nullable: true
+          type: string
+        tmc_host:
+          default: null
+          nullable: true
+          type: string
+        tp_host:
+          default: null
+          nullable: true
+          type: string
+        avi_controller:
+          default: null
+          nullable: true
+          type: string
+        managed_domains:
+          default: null
+          nullable: true
+          type: string
+        spaces:
+          default: null
+          nullable: true
+          type: string
+      required:
+      - avi_user
+      - tp_host
+      - tmc_host
+      - avi_password
+      - spaces
+      - managed_domains
+      - avi_controller
+      - project
+      - project_id
+      - csp_token
+      type: object
+  version: 0.0.0
+
+---
+apiVersion: data.packaging.carvel.dev/v1alpha1
+kind: PackageMetadata
+metadata:
+  creationTimestamp: null
+  name: avi-gslb.field.tanzu.com
+spec:
+  displayName: avi-gslb
+  longDescription: avi-gslb.field.tanzu.com
+  shortDescription: avi-gslb.field.tanzu.com
+
+---
+apiVersion: packaging.carvel.dev/v1alpha1
+kind: PackageInstall
+metadata:
+  annotations:
+    kctrl.carvel.dev/local-fetch-0: .
+  creationTimestamp: null
+  name: avi-gslb
+spec:
+  packageRef:
+    refName: avi-gslb.field.tanzu.com
+    versionSelection:
+      constraints: 0.0.0
+  serviceAccountName: avi-gslb-sa
+status:
+  conditions: null
+  friendlyDescription: ""
+  observedGeneration: 0

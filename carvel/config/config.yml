@@ -1,0 +1,38 @@
+#@ load("@ytt:data", "data")
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tpk8s-avi-gslb
+spec:
+  selector:
+    matchLabels:
+     app: "tpk8s-avi-gslb"
+  template:
+    metadata:
+      labels:
+       app: "tpk8s-avi-gslb"
+    spec:
+      containers:
+      - name: manager
+        image: ghcr.io/warroyo/tpk8s-avi-gslb:1.0.0
+        envFrom:
+        - secretRef:
+          name: tpk8s-avi-gslb-config
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: tpk8s-avi-gslb-config
+type: Opaque
+stringData:
+  CSP_TOKEN: #@ data.values.csp_token
+  TMC_HOST: #@ data.values.tmc_host
+  TP_HOST: #@ data.values.tp_host
+  AVI_USER: #@ data.values.avi_user
+  AVI_PASSWORD: #@ data.values.avi_password
+  AVI_CONTROLLER: #@ data.values.avi_controller
+  PROJECT: #@ data.values.project
+  PROJECT_ID: #@ data.values.project_id
+  SPACES: #@ data.values.spaces
+  MANAGED_DOMAINS: #@ data.values.managed_domains

@@ -1,0 +1,12 @@
+#@data/values
+---
+avi_user: admin
+tp_host: https://api.mgmt.cloud.vmware.com
+tmc_host: https://tmc.tanzu.cloud.vmware.com
+avi_password:
+spaces: 
+managed_domains:
+avi_controller:
+project:
+project_id:
+csp_token:

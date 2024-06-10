@@ -1,0 +1,15 @@
+apiVersion: packaging.carvel.dev/v1alpha1
+kind: PackageRepository
+metadata:
+  annotations:
+    kctrl.carvel.dev/repository-version: 1.0.0
+  creationTimestamp: "2024-06-07T18:20:36Z"
+  name: tpk8s-avi-gslb.field.tanzu.dev
+spec:
+  fetch:
+    imgpkgBundle:
+      image: ghcr.io/warroyo/tpk8s-avi-gslb-repo@sha256:5627c2c3575727636ed219d4239120920d856b17d211449b564cb2624866c142
+status:
+  conditions: null
+  friendlyDescription: ""
+  observedGeneration: 0

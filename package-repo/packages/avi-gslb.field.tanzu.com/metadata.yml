@@ -1,0 +1,9 @@
+apiVersion: data.packaging.carvel.dev/v1alpha1
+kind: PackageMetadata
+metadata:
+  creationTimestamp: null
+  name: avi-gslb.field.tanzu.com
+spec:
+  displayName: avi-gslb
+  longDescription: avi-gslb.field.tanzu.com
+  shortDescription: avi-gslb.field.tanzu.com

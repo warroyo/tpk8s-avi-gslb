@@ -1,0 +1,72 @@
+apiVersion: data.packaging.carvel.dev/v1alpha1
+kind: Package
+metadata:
+  creationTimestamp: null
+  labels:
+    package.spaces.tanzu.vmware.com/package-ref: avi-gslb.field.tanzu.com
+    spaces.tanzu.vmware.com/trait-package: "true"
+  name: avi-gslb.field.tanzu.com.1.0.0
+spec:
+  refName: avi-gslb.field.tanzu.com
+  releasedAt: "2024-06-07T18:19:45Z"
+  template:
+    spec:
+      deploy:
+      - kapp: {}
+      fetch:
+      - imgpkgBundle:
+          image: ghcr.io/warroyo/tpk8s-avi-gslb-bundle@sha256:83e8534bdb1bb2522879188459667390850bd3de9109911cbd42741352ee2b6b
+      template:
+      - ytt:
+          paths:
+          - config
+      - kbld:
+          paths:
+          - '-'
+          - .imgpkg/images.yml
+  valuesSchema:
+    openAPIv3:
+      additionalProperties: false
+      properties:
+        avi_controller:
+          default: null
+          nullable: true
+          type: string
+        avi_password:
+          default: null
+          nullable: true
+          type: string
+        avi_user:
+          default: null
+          nullable: true
+          type: string
+        csp_token:
+          default: null
+          nullable: true
+          type: string
+        managed_domains:
+          default: null
+          nullable: true
+          type: string
+        project:
+          default: null
+          nullable: true
+          type: string
+        project_id:
+          default: null
+          nullable: true
+          type: string
+        spaces:
+          default: null
+          nullable: true
+          type: string
+        tmc_host:
+          default: null
+          nullable: true
+          type: string
+        tp_host:
+          default: null
+          nullable: true
+          type: string
+      type: object
+  version: 1.0.0

@@ -1,0 +1,125 @@
+apiVersion: data.packaging.carvel.dev/v1alpha1
+kind: Package
+metadata:
+  annotations:
+    capability.tanzu.vmware.com/requires: |
+      [{"name": "multicloud-ingress.tanzu.vmware.com"}]
+    kbld.k14s.io/images: |
+      - origins:
+        - preresolved:
+            url: registry.tanzu.vmware.com/tap-saas/tanzu-capabilities-traits@sha256:6a17350bb4b7edbfdce250e8be63687400283739241d31973ed73180134b10c5
+        url: registry.tanzu.vmware.com/tap-saas/tanzu-capabilities-traits@sha256:6a17350bb4b7edbfdce250e8be63687400283739241d31973ed73180134b10c5
+    provided.tanzu.vmware.com: ""
+    traits.spaces.tanzu.vmware.com/referenced: '[{"name":"multicloud-ingress.tanzu.vmware.com"}]'
+  creationTimestamp: "2024-05-31T16:24:38Z"
+  generation: 1
+  labels:
+    claimed.internal.apis.kcp.io/1c8nAiAmP283rsP5PQqYqmhbwN8cQXbC3Q9L0R: 19qiuWWt9jBCF3y5LX9gd7h1WzV8TFxjFz17xE
+    spaces.tanzu.vmware.com/package-ref: multicloud-ingress.tanzu.vmware.com
+    spaces.tanzu.vmware.com/package-repository-ref: tap-saas-0.1.14
+    spaces.tanzu.vmware.com/trait-package: "true"
+    traits.spaces.tanzu.vmware.com/referenced: "true"
+  name: multicloud-ingress.tanzu.vmware.com.0.1.4
+  namespace: default
+  ownerReferences:
+  - apiVersion: packaging.carvel.dev/v1alpha1
+    kind: PackageRepository
+    name: tap-saas-0.1.14
+    uid: 4a8eb662-3728-4b68-898d-f6bf688a46a2
+  resourceVersion: "3392706"
+  uid: 3986fafb-22cc-45be-83ff-136cbb55217e
+spec:
+  refName: multicloud-ingress.tanzu.vmware.com
+  releaseNotes: |
+    Initial release of the kubernetes ingress gateway trait package
+  releasedAt: "2024-05-22T17:18:46Z"
+  template:
+    spec:
+      deploy:
+      - kapp: {}
+      fetch:
+      - imgpkgBundle:
+          image: registry.tanzu.vmware.com/tap-saas/tanzu-capabilities-traits@sha256:6a17350bb4b7edbfdce250e8be63687400283739241d31973ed73180134b10c5
+      template:
+      - ytt:
+          paths:
+          - carvel/
+      - kbld:
+          paths:
+          - '-'
+          - .imgpkg/images.yml
+  valuesSchema:
+    openAPIv3:
+      additionalProperties: false
+      properties:
+        domain:
+          default: null
+          nullable: true
+          type: string
+        gslb:
+          additionalProperties: false
+          nullable: true
+          properties:
+            authentication:
+              additionalProperties: false
+              nullable: true
+              properties:
+                credentialRef:
+                  default: null
+                  nullable: true
+                  type: string
+              required:
+              - credentialRef
+              type: object
+            dns:
+              additionalProperties: false
+              nullable: true
+              properties:
+                zoneId:
+                  default: null
+                  nullable: true
+                  type: string
+              required:
+              - zoneId
+              type: object
+          required:
+          - authentication
+          - dns
+          type: object
+        listenerTemplates:
+          default: null
+          items:
+            additionalProperties: false
+            properties:
+              namePrefix:
+                default: ""
+                type: string
+              port:
+                default: null
+                nullable: true
+                type: integer
+              protocol:
+                default: ""
+                type: string
+              tls:
+                additionalProperties: false
+                properties:
+                  secretRef:
+                    default: ""
+                    type: string
+                type: object
+            type: object
+          nullable: true
+          type: array
+        name:
+          default: default-gateway
+          type: string
+        useClusterIssuer:
+          default: false
+          type: boolean
+      required:
+      - name
+      - domain
+      - listenerTemplates
+      type: object
+  version: 0.1.4
