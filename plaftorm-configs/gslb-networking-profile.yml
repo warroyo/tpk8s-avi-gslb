@@ -1,0 +1,49 @@
+apiVersion: spaces.tanzu.vmware.com/v1alpha1
+kind: Profile
+metadata:
+  name: byo-gslb-networking
+  namespace: default
+spec:
+  requiredCapabilities:
+  - name: certificates.tanzu.vmware.com
+  - name: multicloud-ingress.tanzu.vmware.com
+  - name: egress.tanzu.vmware.com
+  traits:
+  - alias: multicloud-cert-manager.tanzu.vmware.com
+    name: multicloud-cert-manager.tanzu.vmware.com
+    values:
+      inline:
+        multicloud-cert-manager.tanzu.vmware.com:
+          duration: 87600h
+          name: default-issuer
+          privateKey:
+            algorithm: ECDSA
+            size: 384
+          renewBefore: 2160h
+          selfSigned:
+            commonName: ca.company.biz
+            secretName: root-secret
+  - alias: no-gslb-ingress
+    name: no-gslb-ingress
+    values:
+      inline:
+        multicloud-ingress.tanzu.vmware.com:
+          ## update me
+          domain: warroyo-tp4k8s.h2o-4-24460.h2o.vmware.com
+          listenerTemplates:
+          - namePrefix: https-
+            port: 443
+            protocol: HTTPS
+            tls:
+              secretRef: prod-certs
+          - namePrefix: http-
+            port: 80
+            protocol: HTTP
+          name: default-gateway
+          useClusterIssuer: false
+  - alias: egress.tanzu.vmware.com
+    name: egress.tanzu.vmware.com
+    values:
+      inline:
+        egress.tanzu.vmware.com:
+          open: false

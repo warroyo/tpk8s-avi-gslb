@@ -1,0 +1,55 @@
+apiVersion: apps.tanzu.vmware.com/v1
+kind: ContainerApp
+metadata:
+  creationTimestamp: null
+  name: avi-gslb-controller
+spec:
+  secretEnv:
+  - name: CSP_TOKEN
+    secretKeyRef:
+      name: avi-gslb-controller-secret
+      key: CSP_TOKEN
+  - name: TMC_HOST
+    secretKeyRef:
+      name: avi-gslb-controller-secret
+      key: TMC_HOST
+  - name: TP_HOST
+    secretKeyRef:
+      name: avi-gslb-controller-secret
+      key: TP_HOST
+  - name: AVI_USER
+    secretKeyRef:
+      name: avi-gslb-controller-secret
+      key: AVI_USER
+  - name: AVI_PASSWORD
+    secretKeyRef:
+      name: avi-gslb-controller-secret
+      key: AVI_PASSWORD
+  - name: AVI_CONTROLLER
+    secretKeyRef:
+      name: avi-gslb-controller-secret
+      key: AVI_CONTROLLER
+  - name: PROJECT
+    secretKeyRef:
+      name: avi-gslb-controller-secret
+      key: PROJECT
+  - name: PROJECT_ID
+    secretKeyRef:
+      name: avi-gslb-controller-secret
+      key: PROJECT_ID
+  - name: SPACES
+    secretKeyRef:
+      name: avi-gslb-controller-secret
+      key: SPACES
+  - name: MANAGED_DOMAINS
+    secretKeyRef:
+      name: avi-gslb-controller-secret
+      key: MANAGED_DOMAINS
+  contact:
+    team: warroyo
+  build:
+    nonSecretEnv:
+      - name: BP_CPYTHON_VERSION
+        value: "3.9.19"
+    buildpacks: {}
+    path: ../../src

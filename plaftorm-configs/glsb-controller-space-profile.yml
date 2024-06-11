@@ -1,0 +1,23 @@
+apiVersion: spaces.tanzu.vmware.com/v1alpha1
+kind: Profile
+metadata:
+  name: byo-gslb-controller
+  namespace: default
+spec:
+  requiredCapabilities:
+  - name: container-app.tanzu.vmware.com
+  - name: package-management.tanzu.vmware.com
+  - name: egress.tanzu.vmware.com
+  traits:
+  - alias: carvel-package-installer.tanzu.vmware.com
+    name: carvel-package-installer.tanzu.vmware.com
+    values:
+      inline:
+        carvel-package-installer:
+          serviceAccountName: carvel-package-installer
+  - alias: egress.tanzu.vmware.com
+    name: egress.tanzu.vmware.com
+    values:
+      inline:
+        egress.tanzu.vmware.com:
+          open: true

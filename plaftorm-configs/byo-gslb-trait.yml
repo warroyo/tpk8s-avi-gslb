@@ -1,0 +1,27 @@
+apiVersion: spaces.tanzu.vmware.com/v1alpha1
+kind: Trait
+metadata:
+  name: byo-gslb-ingress
+  namespace: default
+spec:
+  carvelPackages:
+  - alias: multicloud-ingress.tanzu.vmware.com
+    refName: multicloud-ingress.tanzu.vmware.com
+    values:
+      inline:
+        domain: ""
+        listenerTemplates:
+        - namePrefix: https-
+          port: 443
+          protocol: HTTPS
+          tls:
+            secretRef: prod-certs
+        - namePrefix: http-
+          port: 80
+          protocol: HTTP
+        name: default-gateway
+    versionSelection:
+      constraints: '>0.0.0'
+  description: Ingress enable Developers and Operators to publish Space Services to
+    out-of-the-Space consumers (users or workloads). To achieve this outcome, an ingress
+    gateway is required and a Space Service must be selected.

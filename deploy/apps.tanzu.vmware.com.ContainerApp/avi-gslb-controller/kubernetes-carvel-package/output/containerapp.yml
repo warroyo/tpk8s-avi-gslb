@@ -1,0 +1,95 @@
+apiVersion: apps.tanzu.vmware.com/v1
+kind: ContainerApp
+metadata:
+  annotations:
+    containerapp.apps.tanzu.vmware.com/class: kubernetes
+  name: avi-gslb-controller
+spec:
+  contact:
+    team: warroyo
+  content:
+    buildTimestamp: "2024-06-11T21:26:06Z"
+    gitCommit: 3c28cf0492d2f1a59950e3880ece838c5dd55eac-dirty
+    gitURL: github.com/warroyo/tpk8s-avi-gslb.git
+    packageRefName: avi-gslb-controller.apps.local
+    summary: git:3c28cf0 @ 2024-06-11T21:26:06Z
+    version: 20240611.2126.6535
+  image: ghcr.io/warroyo/avi-gslb-controller@sha256:896d8d6b97c1e0257cca6734e28d6449b3ed2815a6bf9eae825eaae34e31fe3b
+  relatedRefs:
+  - for: kubernetes.list-replicas
+    kind: Pod
+    labelSelector: containerapp.apps.tanzu.vmware.com/app-name=avi-gslb-controller
+  - apiGroup: apps
+    for: kubernetes.service-binding-target
+    kind: Deployment
+    name: avi-gslb-controller
+  - for: kubernetes.service-target
+    kind: Service
+    name: avi-gslb-controller
+  - for: kubernetes.scale-replicas
+    keyPath: .data['values.yml']->[yaml].replicas
+    kind: Secret
+    name: avi-gslb-controller-values
+  - for: kubernetes.scale-resources
+    keyPath: .data['values.yml']->[yaml].resources
+    kind: Secret
+    name: avi-gslb-controller-values
+  - for: kubernetes.set-secret-env
+    keyPath: .data['values.yml']->[yaml].secretEnv
+    kind: Secret
+    name: avi-gslb-controller-values
+  - apiGroup: packaging.carvel.dev
+    for: kubernetes.delete
+    kind: PackageInstall
+    name: avi-gslb-controller
+  - apiGroup: data.packaging.carvel.dev
+    for: kubernetes.delete
+    kind: Package
+    name: avi-gslb-controller.apps.local.20240611.2126.6535
+  - for: kubernetes.delete
+    kind: Secret
+    name: avi-gslb-controller-values
+  resources:
+    cpu: 300m
+    memory: 1Gi
+  secretEnv:
+  - name: CSP_TOKEN
+    secretKeyRef:
+      key: CSP_TOKEN
+      name: avi-gslb-controller-secret
+  - name: TMC_HOST
+    secretKeyRef:
+      key: TMC_HOST
+      name: avi-gslb-controller-secret
+  - name: TP_HOST
+    secretKeyRef:
+      key: TP_HOST
+      name: avi-gslb-controller-secret
+  - name: AVI_USER
+    secretKeyRef:
+      key: AVI_USER
+      name: avi-gslb-controller-secret
+  - name: AVI_PASSWORD
+    secretKeyRef:
+      key: AVI_PASSWORD
+      name: avi-gslb-controller-secret
+  - name: AVI_CONTROLLER
+    secretKeyRef:
+      key: AVI_CONTROLLER
+      name: avi-gslb-controller-secret
+  - name: PROJECT
+    secretKeyRef:
+      key: PROJECT
+      name: avi-gslb-controller-secret
+  - name: PROJECT_ID
+    secretKeyRef:
+      key: PROJECT_ID
+      name: avi-gslb-controller-secret
+  - name: SPACES
+    secretKeyRef:
+      key: SPACES
+      name: avi-gslb-controller-secret
+  - name: MANAGED_DOMAINS
+    secretKeyRef:
+      key: MANAGED_DOMAINS
+      name: avi-gslb-controller-secret
