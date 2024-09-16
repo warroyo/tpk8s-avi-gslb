@@ -49,21 +49,23 @@ def filter_domains(entry):
     return False
                 
 
-def get_fqdns(space,ucpClient):
+def get_domain_bindings(space,ucpClient):
+    managed = managed_domains
     api = client.CustomObjectsApi(ucpClient)
     api.api_client.configuration.host = f"{ucpClient.configuration.host}/space/{space}"
     try:
-        hostnames = []
-        routes = api.list_namespaced_custom_object(group="gateway.networking.k8s.io", version="v1beta1",plural="httproutes",namespace="default")
-        for route in routes['items']:
-            for section in route['spec']['parentRefs']:
-                if section['name'] == 'default-gateway':
-                    hostname = section['sectionName'].removeprefix('https-').removeprefix('http-')
-                    hostnames.append(hostname)
-        return hostnames
+        allocated= []
+        bindings = api.list_namespaced_custom_object(group="networking.tanzu.vmware.com", version="v1alpha1",plural="domainbindings",namespace="default")
+        for binding in bindings["items"]:
+            for condition in binding["status"]["conditions"]:
+                if condition["type"] == "DomainAllocated" and condition["status"]:
+                      for md in managed:
+                        if md in binding["spec"]["domain"]:
+                            allocated.append(binding)  
+        return allocated
 
     except ApiException as e:
-        logging.error(f"failed to get httproute data for {space}")
+        logging.error(f"failed to get domainbinding data for {space}")
         raise
 
 
@@ -82,41 +84,6 @@ def getAccessToken(csp_host,csp_token):
 
         
 
-# query tmc objects to get the ips of the load balancers for the default gateways
-def get_service_details(cluster_name,namespace):
-    lb_data = {}
-    auth_header = f'Bearer {access_token}'
-    try:
-        service_request = requests.get(
-            url=f"{tmc_host}/v1alpha1/clusters/{cluster_name}/objects?query=data.kind%3A%5B%27Service%27%5D+AND+data.namespaceName%3A{namespace}+AND+fullName.name%3Adefault-gateway-istio",
-            headers={'Authorization': auth_header,'Content-type': 'application/json', 'x-project-id': project_id}
-        )
-    except requests.exceptions.RequestException as e:
-       logging.error(f"unable to get service details for {cluster_name},{namespace}")
-       raise 
-
-    service = service_request.json()
-    
-
-    if 'objects' not in service:
-        error_msg = "results of namespaces service has no data, there many not be any default-istio-gateways"
-        logging.error(error_msg)
-        raise Exception(error_msg)
-
-    domain = service['objects'][0]['meta']['labels']['ingress.tanzu.vmware.com/domain']
-    lb_data['domain'] = domain
-    lb_info = service['objects'][0]['data']['objectService']['resourceService']['status']['loadBalancer']['ingress'][0]
-    if 'ip' in lb_info:
-        lb_data['address'] = lb_info['ip']
-        return lb_data
-    elif 'hostname' in lb_info:
-        lb_data['address'] = lb_info['hostname']
-        return lb_data
-    else:
-        error_msg = "no load balancer IP or hostanme for default-gateway"
-        logging.error(error_msg)
-        raise Exception(error_msg)
-
 def get_space_data(space,ucpClient):
     api = client.CustomObjectsApi(ucpClient)
     try:
@@ -126,15 +93,6 @@ def get_space_data(space,ucpClient):
         logging.error(f"failed to get space data for {space}")
         raise
     
-def get_mn_list(space,ucpClient):
-    api = client.CustomObjectsApi(ucpClient)
-    try:
-        label_selector = f"spaces.tanzu.vmware.com/space-name={space}"
-        ret = api.list_namespaced_custom_object(label_selector=label_selector,group="spaces.tanzu.vmware.com", version="v1alpha1",plural="managednamespaces",namespace="default")
-        return ret
-    except ApiException as e:
-        logging.error(f"failed to get managed namespaces data for {space}")
-        raise
 
 def set_global_token():
     logger.info("checking if token is expired")
@@ -151,7 +109,7 @@ def get_global_token():
 def run():
     
     global api_version
-    gslb_data = {"gslb": []}
+    gslb_data = {}
 
     set_global_token()
    
@@ -170,51 +128,52 @@ def run():
     ucpConfig.host = f"{tp_host}/org/{org_id}/project/{project_id}"
     ucpConfig.api_key = {"authorization": "Bearer " + access_token}
     ucpClient = client.ApiClient(ucpConfig)
-
+    project_bindings = []
     for space in spaces:
         ucpClient.configuration.host = f"{tp_host}/org/{org_id}/project/{project_id}"
         logger.info(f"generating space gslb data for {space}")
-        # space_object = get_space_data(space,ucpClient)
-        space_gslb_data = {}
-        spaceName = space
-        space_gslb_data['space'] = spaceName
         
-        namspaces = get_mn_list(space, ucpClient)
+        domainBindings = get_domain_bindings(space,ucpClient)
+        project_bindings +=domainBindings
+        print(domainBindings)
+       
 
-        fqdns = get_fqdns(space,ucpClient)
-        baseDomain = ""
+    desiredServices = []
+
+    #reconcile domain bindings into unique domains and their pools members for now everything is round robin
+    for binding in project_bindings:
+        domain = binding["spec"]["domain"]
         members = []
-        for mn in namspaces['items']:
-            cluster = mn['status']['placement']['cluster']['name']
-            lb_details = get_service_details(cluster,mn['metadata']['name'])
-            lb_address = lb_details['address']
-            baseDomain = lb_details['domain']
+        for address in binding["status"]["addresses"]:
             member = {
                 "enabled": True,
                 "ip":{
-                    "addr": lb_address,
+                    "addr": address["value"],
                     "type": "V4"
                 }
             }
-            members.append(member)
-        fqdns = [s + f".{baseDomain}" for s in fqdns]
-        space_gslb_data['record'] = {
-            "domain_names": fqdns,
-            "name": f"{project_name}-{spaceName}",
-            "groups":[
-                {
-                "name": f"{project_name}-{spaceName}-pool",
-                "members": members
+            if domain in gslb_data:
+                if member not in gslb_data[domain]["record"]["groups"][0]["members"]:
+                    gslb_data[domain]["record"]["groups"][0]["members"].append(member)
+            else:
+                members.append(member)
+        
+                record = {
+                    "domain_names": [domain],
+                    "name": domain,
+                    "groups":[
+                        {
+                        "name": f"{domain}-pool",
+                        "members": members
+                        }
+                    ]
                 }
-            ]
-        }
-        gslb_data['gslb'].append(space_gslb_data)
+                gslb_data[domain] = {}
+                gslb_data[domain]["record"] = record
 
-    desiredServices = []
-    filtered_services = filter(filter_domains_create,gslb_data['gslb'])
-    for serv in filtered_services:
+    for _, serv in gslb_data.items():
         try:
-            logger.debug(serv)
+            logger.info(serv)
             #check if entry already exists
             record = serv['record']
             desiredServices.append(record['name'])
@@ -276,8 +235,6 @@ if __name__ == '__main__':
         formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('-c', '--controller',
                         help='FQDN or IP address of NSX ALB Controller', default=os.environ.get('AVI_CONTROLLER'))
-    parser.add_argument('--tmchost',
-                        help='FQDN or IP address of the TMC API, including the scheme',default=os.environ.get('TMC_HOST'))
     parser.add_argument('--tphost',
                         help='FQDN or IP address of the Tanzu Platform API,including the scheme',default=os.environ.get('TP_HOST'))
     parser.add_argument('--spaces',
@@ -309,7 +266,6 @@ if __name__ == '__main__':
         api_version = args.apiversion
         csp_token = None
         csp_host = None
-        tmc_host = args.tmchost
         tp_host = args.tphost
         spaces_list = args.spaces
         project_id = args.projectid
@@ -317,7 +273,7 @@ if __name__ == '__main__':
         managed_domains = args.manageddomains.split(",")
         spaces = spaces_list.split(",")
         csp_token = args.csptoken
-        csp_host = "console.cloud.vmware.com"
+        csp_host = "console.tanzu.broadcom.com"
         
         try:
             logging.info("getting initial token")

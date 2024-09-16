@@ -28,7 +28,6 @@ optional arguments:
   -h, --help            show this help message and exit
   -c CONTROLLER, --controller CONTROLLER
                         FQDN or IP address of NSX ALB Controller
-  --tmchost TMCHOST     FQDN or IP address of the TMC API, including the scheme
   --tphost TPHOST       FQDN or IP address of the Tanzu Platform API,including the scheme
   --spaces SPACES       comma separated list of spaces to watch
   --projectid PROJECTID
@@ -64,7 +63,7 @@ Environment variables can also be used in place of the cli flags
 1. run the script
 
 ```bash
-python gslb.py -c https://avi01.h2o-4-24460.h2o.vmware.com/  -p 'password' -u admin -f gslb-api-example.yaml
+python gslb.py -c https://avi01.h2o-4-24460.h2o.vmware.com/  -p 'password' -u admin
 ```
 
 
