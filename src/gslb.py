@@ -29,13 +29,6 @@ if hasattr(requests.packages.urllib3, 'disable_warnings'):
 if hasattr(urllib3, 'disable_warnings'):
     urllib3.disable_warnings()
 
-def filter_domains_create(entry):
-            managed = managed_domains
-            for domain in entry['record']['domain_names']:
-                 for md in managed:
-                     if md in domain:
-                        return True
-            return False
 
 def filter_domains(entry):
     managed = managed_domains
@@ -82,17 +75,6 @@ def getAccessToken(csp_host,csp_token):
         expire_time = time.time() + expires_in
         return access_token, expire_time
 
-        
-
-def get_space_data(space,ucpClient):
-    api = client.CustomObjectsApi(ucpClient)
-    try:
-        ret = api.get_namespaced_custom_object(group="spaces.tanzu.vmware.com", version="v1alpha1",name=space,plural="spaces",namespace="default")
-        return ret
-    except ApiException as e:
-        logging.error(f"failed to get space data for {space}")
-        raise
-    
 
 def set_global_token():
     logger.info("checking if token is expired")
@@ -173,7 +155,7 @@ def run():
 
     for _, serv in gslb_data.items():
         try:
-            logger.info(serv)
+            logger.debug(serv)
             #check if entry already exists
             record = serv['record']
             desiredServices.append(record['name'])

@@ -4,7 +4,7 @@ This repo contains an example of how to write automation to integrate with a GSL
 
 ## How it works
 
-The python script included handles declarative management of GSLB entries. These entries are all based off of input from querying the tanzu platform for information about spaces and the routes configured in them. When running the script it will only manage domains that are in the `manageddomains` list, this way if the GSLB has entries that are not maintained through this process it will leave them alone. The script will iterate over the spaces provided and find the routes that have been configured. It will then determine where the spaces are scheduled and find the load balancer details for the `default-gateway` and generate a gslb config for avi with all of that information. Finally it will iterate over each gslb entry and either create or update that record. Then it will iterate over all existig entries in the GSLB and compare that to the list of currently desired entries. If there is a record that is not in the declared list and is part of the managed domain it will remove that entry from the GSLB.
+The python script included handles declarative management of GSLB entries. These entries are all based off of input from querying the tanzu platform for information about spaces and the routes configured in them. When running the script it will only manage domains that are in the `manageddomains` list, this way if the GSLB has entries that are not maintained through this process it will leave them alone. The script will iterate over all of the domainbindings in a project that match the domains that are configured to be watched. It will get the LB address details and fqdn from that domainbindings. Finally it will iterate over each gslb entry and either create or update that record. Then it will iterate over all existig entries in the GSLB and compare that to the list of currently desired entries. If there is a record that is not in the declared list and is part of the managed domain it will remove that entry from the GSLB.
 
 All of this is done using the [python SDK for AVI](https://github.com/avinetworks/sdk). 
 
@@ -14,17 +14,16 @@ All of this is done using the [python SDK for AVI](https://github.com/avinetwork
 There is a pre-built docker image that can be used to run the script. simple run the below command with the cli args or env vars set.
 
 ```bash
-docker run ghcr.io/warroyo/tpk8s-avi-gslb:1.0.0
+docker run ghcr.io/warroyo/tpk8s-avi-gslb:2.0.0
 ```
 
 ## CLI Usage
 
 ```bash
-usage: gslb.py [-h] [-c CONTROLLER] [--tmchost TMCHOST] [--tphost TPHOST] [--spaces SPACES] [--projectid PROJECTID]
-               [--manageddomains MANAGEDDOMAINS] [--project PROJECT] [-u USER] [-p PASSWORD] [--csptoken CSPTOKEN] [-t TENANT]
-               [-x APIVERSION]
+usage: gslb.py [-h] [-c CONTROLLER] [--tphost TPHOST] [--spaces SPACES] [--projectid PROJECTID] [--manageddomains MANAGEDDOMAINS] [--project PROJECT] [-u USER] [-p PASSWORD]
+               [--csptoken CSPTOKEN] [-t TENANT] [-x APIVERSION]
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   -c CONTROLLER, --controller CONTROLLER
                         FQDN or IP address of NSX ALB Controller
@@ -49,13 +48,14 @@ Environment variables can also be used in place of the cli flags
 
 `AVI_CONTROLLER`
 `PROJECT`
-`TMC_HOST`
 `TP_HOST`
 `SPACES`
 `MANAGED_DOMAINS`
 `AVI_USER`
 `AVI_PASSWORD`
 `CSP_TOKEN`
+`PROJECT_ID`
+`TENANT`
 
 
 ## Usage
