@@ -50,11 +50,12 @@ def get_domain_bindings(space,ucpClient):
         allocated= []
         bindings = api.list_namespaced_custom_object(group="networking.tanzu.vmware.com", version="v1alpha1",plural="domainbindings",namespace="default")
         for binding in bindings["items"]:
-            for condition in binding["status"]["conditions"]:
-                if condition["type"] == "DomainAllocated" and condition["status"]:
-                      for md in managed:
-                        if md in binding["spec"]["domain"]:
-                            allocated.append(binding)  
+            if "status" in binding:
+                for condition in binding["status"]["conditions"]:
+                    if condition["type"] == "DomainAllocated" and condition["status"]:
+                        for md in managed:
+                            if md in binding["spec"]["domain"]:
+                                allocated.append(binding)  
         return allocated
 
     except ApiException as e:
