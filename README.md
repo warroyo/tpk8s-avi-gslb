@@ -77,24 +77,30 @@ This section outline how to deploy this as a part of a space in the platform. Th
 
 ###  Deploy the controller to a space
 
+1. clone repo and checkout the right version tag
 
-1. connect to your project
+```bash
+git clone https://github.com/warroyo/tpk8s-avi-gslb 
+git checkout v2.1.0
+```
+
+2. connect to your project
 ```bash
 tanzu project use <project>
 ```
 
-2. create a profile called `byo-gslb-controller` . This brings in the minimal capabilties needed to deploy. 
+3. create a profile called `byo-gslb-controller` . This brings in the minimal capabilties needed to deploy. 
    
 ```bash
 tanzu deploy --only  plaftorm-configs/gslb-controller-space-profile.yml
 ```
 
-3. create a space using the profile and make sure to select an AVT that will have access to the avi controller
-4. `tanzu space use <previous space>`
-5. copy the `secret-example.yml` into the `.tanzu/config` directory and rename it `secret.yml`
-6. Update all of the values in the `secret.yml` 
-5. `tanzu space use <your-space>`
-6. `tanzu deploy --from-build ./deploy`
+4. create a space using the profile and make sure to select an AVT that will have access to the avi controller
+5. `tanzu space use <previous space>`
+6. copy the `secret-example.yml` into the `.tanzu/config` directory and rename it `secret.yml`
+7. Update all of the values in the `secret.yml` 
+8. `tanzu space use <your-space>`
+9. `tanzu deploy --from-build ./deploy`
 
 
 ## Using with spaces
