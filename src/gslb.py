@@ -115,14 +115,14 @@ def run():
 
     set_global_token()
    
-    # if not api_version:
-    #     # Discover Controller's version if no API version specified
-    #     api = ApiSession.get_session(controller, user, password)
-    #     api_version = api.remote_api_version['Version']
-    #     api.delete_session()
-    #     logger.info(f'Discovered Controller version {api_version}.')
-    # api = ApiSession.get_session(controller, user, password,
-    #                             api_version=api_version)
+    if not api_version:
+        # Discover Controller's version if no API version specified
+        api = ApiSession.get_session(controller, user, password)
+        api_version = api.remote_api_version['Version']
+        api.delete_session()
+        logger.info(f'Discovered Controller version {api_version}.')
+    api = ApiSession.get_session(controller, user, password,
+                                api_version=api_version)
     logger.info("creating ucp client")
     ucpConfig = client.Configuration()
     ucpConfig.verify_ssl = True
