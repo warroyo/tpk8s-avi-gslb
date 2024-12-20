@@ -1,13 +1,16 @@
 apiVersion: packaging.carvel.dev/v1alpha1
 kind: PackageInstall
 metadata:
+  annotations:
+    apps.tanzu.vmware.com/promotable: ""
+    apps.tanzu.vmware.com/promote-group: ContainerApp/avi-gslb-controller
   creationTimestamp: null
   name: avi-gslb-controller
 spec:
   packageRef:
     refName: avi-gslb-controller.apps.local
     versionSelection:
-      constraints: 20240611.2126.6535
+      constraints: 20241220.1532.39960
   serviceAccountName: carvel-package-installer
   values:
   - secretRef:

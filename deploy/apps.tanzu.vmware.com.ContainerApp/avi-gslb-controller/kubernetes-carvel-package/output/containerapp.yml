@@ -2,19 +2,25 @@ apiVersion: apps.tanzu.vmware.com/v1
 kind: ContainerApp
 metadata:
   annotations:
+    apps.tanzu.vmware.com/promotable: ""
+    apps.tanzu.vmware.com/promote-group: ContainerApp/avi-gslb-controller
     containerapp.apps.tanzu.vmware.com/class: kubernetes
   name: avi-gslb-controller
 spec:
   contact:
     team: warroyo
   content:
-    buildTimestamp: "2024-06-11T21:26:06Z"
-    gitCommit: 3c28cf0492d2f1a59950e3880ece838c5dd55eac-dirty
+    buildTimestamp: "2024-12-20T15:32:39Z"
+    gitCommit: 4ba3f4387107d0d7fd3f69366bb04417c0c4f010
     gitURL: github.com/warroyo/tpk8s-avi-gslb.git
+    packageImage: ghcr.io/warroyo/avi-gslb-controller@sha256:06cbbd9d805da89a5b78fe308df6cb12b68e27d64b179db3778889a0bd48d592
     packageRefName: avi-gslb-controller.apps.local
-    summary: git:3c28cf0 @ 2024-06-11T21:26:06Z
-    version: 20240611.2126.6535
-  image: ghcr.io/warroyo/avi-gslb-controller@sha256:896d8d6b97c1e0257cca6734e28d6449b3ed2815a6bf9eae825eaae34e31fe3b
+    packageVersion: 20241220.1532.39960
+    summary: git:4ba3f43 @ 2024-12-20T15:32:39Z
+    version: 20241220.1532.39960
+  health:
+    maxUnavailableReplicas: 10%
+  image: ghcr.io/warroyo/avi-gslb-controller@sha256:073fb6c9e2ab4276e99d4c0924e64c7a0ea98e006ec69038faac78cd6ea13189
   relatedRefs:
   - for: kubernetes.list-replicas
     kind: Pod
@@ -45,8 +51,16 @@ spec:
   - apiGroup: data.packaging.carvel.dev
     for: kubernetes.delete
     kind: Package
-    name: avi-gslb-controller.apps.local.20240611.2126.6535
+    name: avi-gslb-controller.apps.local.20241220.1532.39960
   - for: kubernetes.delete
+    kind: Secret
+    name: avi-gslb-controller-values
+  - for: kubernetes.set-content-hash
+    keyPath: .data['values.yml']->[yaml].contentHash
+    kind: Secret
+    name: avi-gslb-controller-values
+  - for: kubernetes.set-content-version
+    keyPath: .data['values.yml']->[yaml].contentVersion
     kind: Secret
     name: avi-gslb-controller-values
   resources:

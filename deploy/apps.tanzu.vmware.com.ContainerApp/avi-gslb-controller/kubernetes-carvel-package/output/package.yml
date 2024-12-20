@@ -1,11 +1,14 @@
 apiVersion: data.packaging.carvel.dev/v1alpha1
 kind: Package
 metadata:
+  annotations:
+    apps.tanzu.vmware.com/promotable: ""
+    apps.tanzu.vmware.com/promote-group: ContainerApp/avi-gslb-controller
   creationTimestamp: null
-  name: avi-gslb-controller.apps.local.20240611.2126.6535
+  name: avi-gslb-controller.apps.local.20241220.1532.39960
 spec:
   refName: avi-gslb-controller.apps.local
-  releasedAt: "2024-06-11T21:27:06Z"
+  releasedAt: "2024-12-20T15:38:26Z"
   template:
     spec:
       deploy:
@@ -14,7 +17,7 @@ spec:
           - --wait=false
       fetch:
       - imgpkgBundle:
-          image: ghcr.io/warroyo/avi-gslb-controller@sha256:8df00073a27f56ebcc8409f544e51bcee54366e35b5476a69e75bac1dad60cb5
+          image: ghcr.io/warroyo/avi-gslb-controller@sha256:06cbbd9d805da89a5b78fe308df6cb12b68e27d64b179db3778889a0bd48d592
       template:
       - ytt:
           paths:
@@ -25,4 +28,4 @@ spec:
           - '-'
   valuesSchema:
     openAPIv3: null
-  version: 20240611.2126.6535
+  version: 20241220.1532.39960
