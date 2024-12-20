@@ -246,7 +246,7 @@ if __name__ == '__main__':
     parser.add_argument('--tphost',
                         help='FQDN or IP address of the Tanzu Platform API,including the scheme',default=os.environ.get('TP_HOST'))
     parser.add_argument('--spaces',
-                        help='comma separated list of spaces to watch',default=os.environ.get('SPACES'))
+                        help='comma separated list of spaces to watch, or * to watch all spaces that have ingress enabled',default=os.environ.get('SPACES'))
     parser.add_argument('--projectid',
                         help='id of the project to use',default=os.environ.get('PROJECT_ID'))
     parser.add_argument('--manageddomains',help='comma separated list of domains that should be managed',default=os.environ.get('MANAGED_DOMAINS'))

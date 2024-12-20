@@ -28,7 +28,7 @@ options:
   -c CONTROLLER, --controller CONTROLLER
                         FQDN or IP address of NSX ALB Controller
   --tphost TPHOST       FQDN or IP address of the Tanzu Platform API,including the scheme
-  --spaces SPACES       comma separated list of spaces to watch
+  --spaces SPACES       comma separated list of spaces to watch, or * to watch all spaces that have ingress enabled
   --projectid PROJECTID
                         id of the project to use
   --manageddomains MANAGEDDOMAINS
@@ -58,6 +58,10 @@ Environment variables can also be used in place of the cli flags
 `TENANT`
 
 
+## Watching Spaces
+
+There is the option to provide a comma seperated list of spaces to the `SPACES` env var or you can use '*' whcih will watch all spaces that have the ingress capabiltiy.
+
 ## Usage
 
 1. run the script
@@ -70,11 +74,6 @@ python gslb.py -c https://avi01.h2o-4-24460.h2o.vmware.com/  -p 'password' -u ad
 ## Deploying in Tanzu Platform for K8s
 
 This section outline how to deploy this as a part of a space in the platform. This is the recommended approach for running this.
-
-### Deploy as a Trait
-
-coming soon.....
-
 
 ###  Deploy the controller to a space
 
@@ -100,28 +99,14 @@ tanzu deploy --only  plaftorm-configs/gslb-controller-space-profile.yml
 
 ## Using with spaces
 
-In order to use the deployed gslb controller with a space that is listed in the `SPACES` provided to the controller the space needs to have a custom networking profile that does not enable the in product gslb. 
 
+### Create self managed DNS domain
 
-1. connect to your project
-```bash
-tanzu project use <project>
-```
+in the networking section of the admin page, create a new domain and choose manage my own DNS". This should be one of the domains that are configured to be managed by the controller
 
-2. create custom trait that removes the gslb default configs. this will allow us to disable the gslb controller in the platform in order to use our own controller.
+### Deploy and app and create a  domain binding
 
-```bash
-tanzu deploy --only  plaftorm-configs/byo-gslb-trait.yml
-```
-
-
-3. create the profile, this profile use the custom trait. before running the below command update the `domain` in the profile yaml to the domain you plan to use with avi.
-```bash
-tanzu deploy --only plaftorm-configs/gslb-networking-profile.yml
-```
-
-4. create a space or update a space to use the new profile.
-5. deploy your app.
+After the app is deployed create a domain binding to the domain you previsouly created and it will be picked up by the controller. 
 
 ### Validating it works
 
