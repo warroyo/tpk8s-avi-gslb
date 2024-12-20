@@ -41,6 +41,25 @@ def filter_domains(entry):
         return True
     return False
                 
+def getSpaces(ucpClient):
+    api = client.CustomObjectsApi(ucpClient)
+    try:
+        matched_spaces =[]
+        ucp_spaces = api.list_namespaced_custom_object(group="spaces.tanzu.vmware.com", version="v1alpha1",plural="spaces",namespace="default")
+        for space in ucp_spaces["items"]:
+            name = space['metadata']['name']
+            if "status" in space:
+                if not any(cap["name"] == "ingress.tanzu.vmware.com" for cap in space["status"]["providedCapabilities"] ):
+                    logging.info(f"space {name} does not have ingress capability, skipping")
+                    continue
+                for condition in space["status"]["conditions"]:
+                    if condition["type"] == "Ready" and condition["status"]:
+                        matched_spaces.append(name)  
+        return matched_spaces
+
+    except ApiException as e:
+        logging.error(f"failed to get domainbinding data for {space}")
+        raise
 
 def get_domain_bindings(space,ucpClient):
     managed = managed_domains
@@ -96,15 +115,14 @@ def run():
 
     set_global_token()
    
-    if not api_version:
-        # Discover Controller's version if no API version specified
-        api = ApiSession.get_session(controller, user, password)
-        api_version = api.remote_api_version['Version']
-        api.delete_session()
-        logger.info(f'Discovered Controller version {api_version}.')
-    api = ApiSession.get_session(controller, user, password,
-                                api_version=api_version)
-
+    # if not api_version:
+    #     # Discover Controller's version if no API version specified
+    #     api = ApiSession.get_session(controller, user, password)
+    #     api_version = api.remote_api_version['Version']
+    #     api.delete_session()
+    #     logger.info(f'Discovered Controller version {api_version}.')
+    # api = ApiSession.get_session(controller, user, password,
+    #                             api_version=api_version)
     logger.info("creating ucp client")
     ucpConfig = client.Configuration()
     ucpConfig.verify_ssl = True
@@ -112,13 +130,20 @@ def run():
     ucpConfig.api_key = {"authorization": "Bearer " + access_token}
     ucpClient = client.ApiClient(ucpConfig)
     project_bindings = []
-    for space in spaces:
+    if "*" in spaces:
+        monit_spaces = getSpaces(ucpClient)
+    else:
+        monit_spaces = spaces
+    for space in monit_spaces:
         ucpClient.configuration.host = f"{tp_host}/org/{org_id}/project/{project_id}"
         logger.info(f"generating space gslb data for {space}")
+        try:
+            domainBindings = get_domain_bindings(space,ucpClient)
+            project_bindings +=domainBindings
+            print(domainBindings)
+        except ApiException as e:
+          logging.error(f"unable to get any domain bindings for {space}: {e}")   
         
-        domainBindings = get_domain_bindings(space,ucpClient)
-        project_bindings +=domainBindings
-        print(domainBindings)
        
 
     desiredServices = []
