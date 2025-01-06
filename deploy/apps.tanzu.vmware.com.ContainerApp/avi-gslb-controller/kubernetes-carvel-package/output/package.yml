@@ -5,10 +5,10 @@ metadata:
     apps.tanzu.vmware.com/promotable: ""
     apps.tanzu.vmware.com/promote-group: ContainerApp/avi-gslb-controller
   creationTimestamp: null
-  name: avi-gslb-controller.apps.local.20241220.1532.39960
+  name: avi-gslb-controller.apps.local.20250106.2121.8933
 spec:
   refName: avi-gslb-controller.apps.local
-  releasedAt: "2024-12-20T15:38:26Z"
+  releasedAt: "2025-01-06T21:22:16Z"
   template:
     spec:
       deploy:
@@ -17,7 +17,7 @@ spec:
           - --wait=false
       fetch:
       - imgpkgBundle:
-          image: ghcr.io/warroyo/avi-gslb-controller@sha256:06cbbd9d805da89a5b78fe308df6cb12b68e27d64b179db3778889a0bd48d592
+          image: ghcr.io/warroyo/avi-gslb-controller@sha256:27b0f24050fa77174993bf3024203344238298ecc067231a960bbfe23cb20163
       template:
       - ytt:
           paths:
@@ -28,4 +28,4 @@ spec:
           - '-'
   valuesSchema:
     openAPIv3: null
-  version: 20241220.1532.39960
+  version: 20250106.2121.8933

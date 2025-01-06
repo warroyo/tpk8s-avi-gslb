@@ -9,10 +9,6 @@ spec:
     secretKeyRef:
       name: avi-gslb-controller-secret
       key: CSP_TOKEN
-  - name: TMC_HOST
-    secretKeyRef:
-      name: avi-gslb-controller-secret
-      key: TMC_HOST
   - name: TP_HOST
     secretKeyRef:
       name: avi-gslb-controller-secret
@@ -29,10 +25,6 @@ spec:
     secretKeyRef:
       name: avi-gslb-controller-secret
       key: AVI_CONTROLLER
-  - name: PROJECT
-    secretKeyRef:
-      name: avi-gslb-controller-secret
-      key: PROJECT
   - name: PROJECT_ID
     secretKeyRef:
       name: avi-gslb-controller-secret

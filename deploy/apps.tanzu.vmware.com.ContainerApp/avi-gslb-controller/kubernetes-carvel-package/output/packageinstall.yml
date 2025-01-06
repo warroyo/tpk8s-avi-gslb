@@ -10,7 +10,7 @@ spec:
   packageRef:
     refName: avi-gslb-controller.apps.local
     versionSelection:
-      constraints: 20241220.1532.39960
+      constraints: 20250106.2121.8933
   serviceAccountName: carvel-package-installer
   values:
   - secretRef:

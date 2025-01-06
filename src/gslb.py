@@ -250,8 +250,6 @@ if __name__ == '__main__':
     parser.add_argument('--projectid',
                         help='id of the project to use',default=os.environ.get('PROJECT_ID'))
     parser.add_argument('--manageddomains',help='comma separated list of domains that should be managed',default=os.environ.get('MANAGED_DOMAINS'))
-    parser.add_argument('--project',
-                        help='name of the project',default=os.environ.get('PROJECT'))
     parser.add_argument('-u', '--user', help='NSX ALB API Username',default=os.environ.get('AVI_USER'))
     parser.add_argument('-p', '--password', help='NSX ALB API Password',default=os.environ.get('AVI_PASSWORD'))
     parser.add_argument('--csptoken', help='CSP token for api calls',default=os.environ.get('CSP_TOKEN'))
@@ -277,7 +275,6 @@ if __name__ == '__main__':
         tp_host = args.tphost
         spaces_list = args.spaces
         project_id = args.projectid
-        project_name = args.project
         managed_domains = args.manageddomains.split(",")
         spaces = spaces_list.split(",")
         csp_token = args.csptoken

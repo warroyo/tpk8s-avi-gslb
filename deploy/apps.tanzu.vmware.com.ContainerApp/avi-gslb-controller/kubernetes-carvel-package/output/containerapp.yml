@@ -10,17 +10,17 @@ spec:
   contact:
     team: warroyo
   content:
-    buildTimestamp: "2024-12-20T15:32:39Z"
-    gitCommit: 4ba3f4387107d0d7fd3f69366bb04417c0c4f010
+    buildTimestamp: "2025-01-06T21:21:08Z"
+    gitCommit: 772c967de2e67ed56479ceade09bb3c2452397e5-dirty
     gitURL: github.com/warroyo/tpk8s-avi-gslb.git
-    packageImage: ghcr.io/warroyo/avi-gslb-controller@sha256:06cbbd9d805da89a5b78fe308df6cb12b68e27d64b179db3778889a0bd48d592
+    packageImage: ghcr.io/warroyo/avi-gslb-controller@sha256:27b0f24050fa77174993bf3024203344238298ecc067231a960bbfe23cb20163
     packageRefName: avi-gslb-controller.apps.local
-    packageVersion: 20241220.1532.39960
-    summary: git:4ba3f43 @ 2024-12-20T15:32:39Z
-    version: 20241220.1532.39960
+    packageVersion: 20250106.2121.8933
+    summary: git:772c967 @ 2025-01-06T21:21:08Z
+    version: 20250106.2121.8933
   health:
     maxUnavailableReplicas: 10%
-  image: ghcr.io/warroyo/avi-gslb-controller@sha256:073fb6c9e2ab4276e99d4c0924e64c7a0ea98e006ec69038faac78cd6ea13189
+  image: ghcr.io/warroyo/avi-gslb-controller:20250106.2121.8933@sha256:eac429afb6962281980cf2a49aee1b6a335dc219d79bae7f8aa8de748f045a60
   relatedRefs:
   - for: kubernetes.list-replicas
     kind: Pod
@@ -51,7 +51,7 @@ spec:
   - apiGroup: data.packaging.carvel.dev
     for: kubernetes.delete
     kind: Package
-    name: avi-gslb-controller.apps.local.20241220.1532.39960
+    name: avi-gslb-controller.apps.local.20250106.2121.8933
   - for: kubernetes.delete
     kind: Secret
     name: avi-gslb-controller-values
@@ -71,10 +71,6 @@ spec:
     secretKeyRef:
       key: CSP_TOKEN
       name: avi-gslb-controller-secret
-  - name: TMC_HOST
-    secretKeyRef:
-      key: TMC_HOST
-      name: avi-gslb-controller-secret
   - name: TP_HOST
     secretKeyRef:
       key: TP_HOST
@@ -90,10 +86,6 @@ spec:
   - name: AVI_CONTROLLER
     secretKeyRef:
       key: AVI_CONTROLLER
-      name: avi-gslb-controller-secret
-  - name: PROJECT
-    secretKeyRef:
-      key: PROJECT
       name: avi-gslb-controller-secret
   - name: PROJECT_ID
     secretKeyRef:
